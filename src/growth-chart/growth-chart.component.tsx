@@ -63,6 +63,8 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
       }
     : data;
 
+  const patientGenderValue = patient?.gender?.toLowerCase() === 'other' ? t('other', 'other') : t('unknown', 'unknown');
+
   return (
     <Theme theme="white">
       <div className={styles.container}>
@@ -75,11 +77,17 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
               lowContrast
               className={styles.customNotification}
               kind="info"
-              title={t('referenceSelected', '{{gender}} reference selected.', {
-                gender: selectedGender === 'male' ? 'Male' : 'Female',
+              title={t(
+                'viewingGrowthChartForUnsupportedGender',
+                'Viewing a {{selectedGender}} growth chart for patient with gender {{patientGender}}.',
+                {
+                  selectedGender: selectedGender === 'male' ? 'male' : 'female',
+                  patientGender: patientGenderValue,
+                },
+              )}
+              actionButtonLabel={t('clickToSetGender', "Click to set patient's gender to {{selectedGender}}", {
+                selectedGender: selectedGender === 'male' ? 'male' : 'female',
               })}
-              subtitle={t('updateGenderPrompt', 'Would you like to update the gender?')}
-              actionButtonLabel={t('clickHere', 'Click Here')}
               onActionButtonClick={() => {
                 navigate({ to: `${(window as any).openmrsSpaBase || '/openmrs/spa'}/patient/${patientUuid}/edit` });
               }}
