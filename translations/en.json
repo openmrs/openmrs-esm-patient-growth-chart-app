@@ -8,10 +8,8 @@
   "growthChartsAvailability": "Growth charts are only available for male and female patients",
   "male": "Male",
   "noGrowthChartsToDisplay": "No Growth charts to display",
-  "other": "other",
   "patientWeight": "Patient Weight",
   "proceedSelectingGender": "You can proceed by selecting one of the available genders",
-  "unknown": "unknown",
   "unknownGender": "The patient is unknown/other gender",
   "viewingGrowthChartForUnsupportedGender": "Viewing a {{selectedGender}} growth chart for patient with gender {{patientGender}}."
 }
