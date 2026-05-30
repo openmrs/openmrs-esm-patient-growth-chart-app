@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tile, RadioButtonGroup, RadioButton, Layer } from '@carbon/react';
+import { getCoreTranslation } from '@openmrs/esm-framework';
 import styles from './unknown-gender.scss';
 
 interface UnknownGenderStateProps {
@@ -16,6 +17,11 @@ const UnknownGenderState: React.FC<UnknownGenderStateProps> = ({ onGenderSelecte
     const genderStr = value.toString();
     setSelectedGender(genderStr);
     onGenderSelected(genderStr);
+  };
+
+  const genderLabels = {
+    male: getCoreTranslation('male', 'Male'),
+    female: getCoreTranslation('female', 'Female'),
   };
 
   return (
@@ -34,8 +40,8 @@ const UnknownGenderState: React.FC<UnknownGenderStateProps> = ({ onGenderSelecte
 
             <div className={styles.radioGroup}>
               <RadioButtonGroup name="gender-selection" valueSelected={selectedGender} onChange={handleGenderChange}>
-                <RadioButton value="male" id="male" labelText={t('male', 'Male')} />
-                <RadioButton value="female" id="female" labelText={t('female', 'Female')} />
+                <RadioButton value="male" id="male" labelText={genderLabels.male} />
+                <RadioButton value="female" id="female" labelText={genderLabels.female} />
               </RadioButtonGroup>
             </div>
           </div>
