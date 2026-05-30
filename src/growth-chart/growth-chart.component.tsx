@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { DataTableSkeleton, Tile, Theme, ActionableNotification } from '@carbon/react';
-import { EmptyCard, CardHeader, navigate } from '@openmrs/esm-framework';
+import { EmptyCard, CardHeader, navigate, getCoreTranslation } from '@openmrs/esm-framework';
 import GrowthChartVisualization from './growth-chart-visualization.component';
 import UnknownGenderState from '../unknown-gender-state/unknown-gender.component';
 import { useGrowthChartData } from './growth-chart.resource';
@@ -63,7 +63,17 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
       }
     : data;
 
-  const patientGenderValue = patient?.gender?.toLowerCase() === 'other' ? t('other', 'other') : t('unknown', 'unknown');
+  const genderTranslations = {
+    male: getCoreTranslation('male', 'Male'),
+    female: getCoreTranslation('female', 'Female'),
+    other: getCoreTranslation('other', 'Other'),
+    unknown: getCoreTranslation('unknown', 'Unknown'),
+  };
+
+  const selectedGenderValue = selectedGender === 'male' ? genderTranslations.male : genderTranslations.female;
+
+  const patientGenderValue =
+    patient?.gender?.toLowerCase() === 'other' ? genderTranslations.other : genderTranslations.unknown;
 
   return (
     <Theme theme="white">
@@ -71,7 +81,7 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
         <CardHeader title={t('growthChart', 'Growth Chart')} />
 
         {showUpdatePrompt && (
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', padding: '0 1rem' }}>
+          <div className={styles.notificationContainer}>
             <ActionableNotification
               inline
               lowContrast
@@ -81,15 +91,15 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
                 'viewingGrowthChartForUnsupportedGender',
                 'Viewing a {{selectedGender}} growth chart for patient with gender {{patientGender}}.',
                 {
-                  selectedGender: selectedGender === 'male' ? 'male' : 'female',
+                  selectedGender: selectedGenderValue,
                   patientGender: patientGenderValue,
                 },
               )}
               actionButtonLabel={t('clickToSetGender', "Click to set patient's gender to {{selectedGender}}", {
-                selectedGender: selectedGender === 'male' ? 'male' : 'female',
+                selectedGender: selectedGenderValue,
               })}
               onActionButtonClick={() => {
-                navigate({ to: `${(window as any).openmrsSpaBase || '/openmrs/spa'}/patient/${patientUuid}/edit` });
+                navigate({ to: '${openmrsSpaBase}/patient/${patientUuid}/edit', templateParams: { patientUuid } });
               }}
               onClose={() => setShowUpdatePrompt(false)}
             />
