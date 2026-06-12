@@ -46,3 +46,14 @@
 .container {
   background-color: var(--cds-background);
 }
+
+.customNotification {
+  background-color: var(--cds-notification-background-info);
+}
+
+.notificationContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--cds-spacing-05);
+  padding: 0 var(--cds-spacing-05);
+}

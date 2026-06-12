@@ -1,7 +1,13 @@
 {
+  "clickToSetGender": "Click to set patient's gender to {{selectedGender}}",
   "errorDataUnavailable": "Patient data not available",
   "errorLoadingData": "Error loading growth chart data",
   "growthChart": "Growth Chart",
   "growthCharts": "Growth Charts",
-  "patientWeight": "Patient Weight"
+  "growthChartsAvailability": "Growth charts are only available for male and female patients",
+  "noGrowthChartsToDisplay": "No Growth charts to display",
+  "patientWeight": "Patient Weight",
+  "proceedSelectingGender": "You can proceed by selecting one of the available genders",
+  "unknownGender": "The patient is unknown/other gender",
+  "viewingGrowthChartForUnsupportedGender": "Viewing a {{selectedGender}} growth chart for patient with gender {{patientGender}}."
 }

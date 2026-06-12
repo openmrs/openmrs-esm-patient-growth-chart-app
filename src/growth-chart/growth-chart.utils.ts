@@ -1,5 +1,6 @@
 import type { TFunction } from 'i18next';
 import { ScaleTypes, ToolbarControlTypes } from '@carbon/charts/interfaces';
+import { getCoreTranslation } from '@openmrs/esm-framework';
 import boysWeightData from '../who-data/boys/weight-for-age.json';
 import girlsWeightData from '../who-data/girls/weight-for-age.json';
 
@@ -11,7 +12,7 @@ export const getReferenceSeries = (gender?: string) => {
     return [];
   }
 
-  const referenceSeries = [];
+  const referenceSeries: Array<{ group: string; age: number; value: number }> = [];
   const percentiles = ['P3', 'P15', 'P50', 'P85', 'P97'];
 
   whoData.forEach((point) => {
@@ -105,4 +106,17 @@ export const getChartOptions = (t: TFunction) => {
       showTotal: false,
     },
   };
+};
+
+export const getGenderTranslation = (gender: string | null | undefined) => {
+  switch (gender?.toLowerCase()) {
+    case 'male':
+      return getCoreTranslation('male', 'Male');
+    case 'female':
+      return getCoreTranslation('female', 'Female');
+    case 'other':
+      return getCoreTranslation('other', 'Other');
+    default:
+      return getCoreTranslation('unknown', 'Unknown');
+  }
 };
