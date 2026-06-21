@@ -1,5 +1,5 @@
 {
-  "name": "@openmrs/esm-patient-growth-chart",
+  "name": "@openmrs/esm-patient-growth-chart-app",
   "version": "1.0.0",
   "license": "MPL-2.0",
   "description": "patient-growth-chart frontend module for O3",
