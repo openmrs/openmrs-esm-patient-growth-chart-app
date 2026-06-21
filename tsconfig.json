@@ -22,6 +22,7 @@
     ],
     "noEmit": true,
     "noImplicitAny": false,
+    "types": ["vitest/globals"],
     "baseUrl": ".",
     "paths": {
       "__mocks__": ["./__mocks__"],
@@ -34,6 +35,5 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", ".yarn"],
-  "types": ["@testing-library/jest-dom", "lodash", "react", "react-dom"]
+  "exclude": ["node_modules", "dist", ".yarn"]
 }
