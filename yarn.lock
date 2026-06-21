@@ -2137,9 +2137,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openmrs/esm-patient-growth-chart@workspace:.":
+"@openmrs/esm-patient-growth-chart-app@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@openmrs/esm-patient-growth-chart@workspace:."
+  resolution: "@openmrs/esm-patient-growth-chart-app@workspace:."
   dependencies:
     "@carbon/charts": "npm:^1.27.3"
     "@carbon/charts-react": "npm:^1.27.3"
