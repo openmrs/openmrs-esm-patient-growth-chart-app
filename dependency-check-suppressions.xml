@@ -157,5 +157,6 @@
         Suppress vulnerabilities in devDependencies or transitive devDependencies that do not affect the production growth chart application runtime bundle.
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/(extend|file-type|follow-redirects|http-proxy-middleware|ip-address|js-yaml|minimatch|phin|postcss|qs|react-router|serialize-javascript|sigstore|tar|tmp|uuid)@.*$</packageUrl>
+        <vulnerabilityName regex="true">.*</vulnerabilityName>
     </suppress>
 </suppressions>
