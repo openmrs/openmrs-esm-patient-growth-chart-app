@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+    MAINTAINER NOTE — OpenMRS CVE Suppressions
+    ============================================
+    When new CVEs are published against OpenMRS (openmrs-core, Reference Application, or any
+    official module), the dependency-check scanner may incorrectly flag project's JARs as
+    vulnerable due to the shared "openmrs" namespace. If a new CVE appears in a scan report:
+
+      1. Investigate whether the CVE actually applies to the artifact (see the affected
+         component and version range in the CVE details).
+      2. If it is confirmed to be a false positive (i.e. the vulnerable code is in openmrs-core,
+         the Reference Application, or a different module), add a new <suppress> block below
+         with the CVE ID and a note explaining why it does not apply.
+      3. Do NOT suppress it until you have checked — the intent of suppressing CVEs individually
+         (rather than by package/namespace) is specifically to avoid accidentally suppressing a
+         CVE that legitimately affects one of this project's actual OpenMRS dependencies.
+         Suppressing by CVE ID after manual review keeps that safety intact.
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress>
+        <notes><![CDATA[
+	   file name: openmrs-liquibase-3.0.0-SNAPSHOT.jar
+	   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.openmrs\.liquibase/openmrs-liquibase@.*$</packageUrl>
+        <cve>CVE-2022-0839</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2017-12796: Unauthenticated XML deserialization RCE in the Reporting Compatibility Add On
+        (reportingcompatibility module) before 2.0.4, as shipped in OpenMRS Reference Application
+        before 2.6.1. This finding is a false positive if the scanned artifact is not the
+        reportingcompatibility module itself. The CVE scanner incorrectly matches on the shared
+        openmrs namespace rather than the specific affected artifact.
+        ]]></notes>
+        <cve>CVE-2017-12796</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2021-43094: SQL injection via arbitrary GET parameters in patient.page, affecting
+        OpenMRS Reference Application Standalone Edition <=2.11 and Platform Standalone Edition
+        <=2.4.0. This is a false positive for individual module JARs — the vulnerability is in the
+        standalone distribution packaging, not in module code. The scanner matches on the shared
+        openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2021-43094</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2020-5728: XSS via unsanitized Referrer header copied into the redirectUrl field on
+        multiple web pages (e.g. login.htm) in openmrs-core 2.9 and prior. This is a false positive
+        for module JARs — the vulnerable code lives in the core web layer, not in any module.
+        The scanner matches on the shared openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2020-5728</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2020-5729: XSS via the UI Framework Error Page reflecting arbitrary user input in
+        openmrs-core 2.9 and prior. This is a false positive for module JARs — the vulnerable
+        rendering logic belongs to openmrs-core's UI framework, not to any module. The scanner
+        matches on the shared openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2020-5729</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2020-5730: XSS via the sessionLocation parameter on the login page in openmrs-core
+        2.9 and prior. This is a false positive for module JARs — the vulnerable parameter is
+        handled by the core login controller, not by any module. The scanner matches on the
+        shared openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2020-5730</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2020-5731: XSS via the app parameter on the ActiveVisits page in openmrs-core 2.9
+        and prior. This is a false positive for module JARs — the vulnerable page and parameter
+        handling are part of openmrs-core, not any module. The scanner matches on the shared
+        openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2020-5731</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2020-5732: Missing authentication on the import endpoint of the Data Exchange Module
+        in openmrs-core 2.9 and prior. This is a false positive if the scanned artifact is not
+        the dataexchange module itself. The access control bypass is specific to that module's
+        controller; the scanner incorrectly matches other JARs via the shared openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2020-5732</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2020-5733: Missing authentication on the export endpoint of the Data Exchange Module
+        in openmrs-core 2.9 and prior, allowing unauthenticated users to export potentially
+        sensitive data. This is a false positive if the scanned artifact is not the dataexchange
+        module itself. Like CVE-2020-5732, the vulnerability is specific to that module's
+        controller; the scanner incorrectly matches other JARs via the shared openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2020-5733</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2026-40076: Zip Slip path traversal in the module upload endpoint
+        (POST /openmrs/ws/rest/v1/module) of openmrs-core 2.7.8 and prior and 2.8.0 through 2.8.5,
+        allowing an authenticated attacker with module upload access to write files outside the
+        module directory and achieve RCE. Fixed in openmrs-core 2.8.6. This is a false positive
+        for module JARs — the vulnerable extraction logic lives in openmrs-core, not in any module.
+        The scanner matches on the shared openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2026-40076</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2026-40075: Path traversal in the /openmrs/moduleResources/{moduleid} endpoint of
+        openmrs-core 2.7.8 and prior and 2.8.0 through 2.8.5. ModuleResourcesServlet builds a
+        filesystem path from user-controlled input without boundary validation, and because the
+        endpoint is unauthenticated it allows reading arbitrary files. Fixed in openmrs-core 2.8.6.
+        This is a false positive for module JARs — the vulnerable servlet belongs to openmrs-core,
+        not to any module. The scanner matches on the shared openmrs namespace.
+        ]]></notes>
+        <cve>CVE-2026-40075</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        The Elasticsearch Java client family — co.elastic.clients (the typed client) and
+        org.elasticsearch.client (the low-level rest-client and rest-client-sniffer it pulls in
+        transitively) — are client libraries, not the Elasticsearch server. The scanner's CPE
+        matcher conflates these client jars with cpe:/a:elastic:elasticsearch and
+        cpe:/a:elasticsearch:elasticsearch (the server product), so every server-only CVE
+        published against that Elasticsearch version is falsely attributed to them (e.g.
+        CVE-2024-23445, CVE-2024-52979/52980/52981, CVE-2025-37731, CVE-2025-68384 — all
+        server-side: cross-cluster API keys, query StackOverflow/DoS in the server, etc.).
+        Suppress the two server CPEs for the client groups rather than enumerating CVEs, so the
+        suppression survives client version bumps and future server-only CVEs. The actual server
+        ships as org.elasticsearch:elasticsearch, which this packageUrl does NOT match, so a real
+        server dependency would still fire. A genuine client-library CVE would carry a
+        client-specific CPE, not these server CPEs, so it still surfaces.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/(co\.elastic\.clients|org\.elasticsearch\.client)/.*@.*$</packageUrl>
+        <cpe>cpe:/a:elastic:elasticsearch</cpe>
+        <cpe>cpe:/a:elasticsearch:elasticsearch</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Suppress vulnerabilities in devDependencies or transitive devDependencies that do not affect the production growth chart application runtime bundle.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/(extend|file-type|follow-redirects|http-proxy-middleware|ip-address|js-yaml|minimatch|phin|postcss|qs|react-router|serialize-javascript|sigstore|tar|tmp|uuid)@.*$</packageUrl>
+    </suppress>
+</suppressions>
