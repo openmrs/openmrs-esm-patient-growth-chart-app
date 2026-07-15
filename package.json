@@ -47,8 +47,8 @@
     "src"
   ],
   "dependencies": {
-    "@carbon/charts": "^1.27.3",
-    "@carbon/charts-react": "^1.27.3",
+    "@carbon/charts": "^1.27.16",
+    "@carbon/charts-react": "^1.27.16",
     "@carbon/react": "^1.83.0"
   },
   "peerDependencies": {
@@ -88,7 +88,7 @@
     "eslint-plugin-playwright": "^0.15.3",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-testing-library": "^6.2.0",
-    "happy-dom": "^18.0.1",
+    "happy-dom": "^20.8.9",
     "husky": "^9.0.11",
     "i18next": "^25.0.0",
     "i18next-parser": "^9.0.1",
@@ -104,7 +104,7 @@
     "sass": "^1.33.0",
     "single-spa": "^6.0.0",
     "swr": "^2.0.0",
-    "turbo": "^1.11.3",
+    "turbo": "^2.9.14",
     "typescript": "^5.9.3",
     "vitest": "^4.1.2"
   },
@@ -112,5 +112,15 @@
     "*.{ts,tsx}": "eslint --cache --fix --max-warnings 0",
     "*.{css,scss,ts,tsx}": "prettier --write --list-different"
   },
-  "packageManager": "yarn@4.10.3"
+  "packageManager": "yarn@4.10.3",
+  "resolutions": {
+    "dompurify": "^3.4.12",
+    "lodash-es": "^4.18.1",
+    "lodash": "^4.18.1",
+    "webpack-dev-server": "^5.2.4",
+    "fast-uri": "^3.1.2",
+    "undici": "^8.7.0",
+    "ws": "^8.21.1",
+    "brace-expansion": "^5.0.6"
+  }
 }
