@@ -5,8 +5,8 @@
   "growthChart": "Growth Chart",
   "growthCharts": "Growth Charts",
   "growthChartsAvailability": "Growth charts are only available for male and female patients",
+  "growthChartTypeSelector": "Growth chart type selector",
   "noGrowthChartsToDisplay": "No Growth charts to display",
-  "patientWeight": "Patient Weight",
   "proceedSelectingGender": "You can proceed by selecting one of the available genders",
   "unknownGender": "The patient is unknown/other gender",
   "viewingGrowthChartForUnsupportedGender": "Viewing a {{selectedGender}} growth chart for patient with gender {{patientGender}}."

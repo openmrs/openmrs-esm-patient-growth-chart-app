@@ -1,12 +1,23 @@
 import React, { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { DataTableSkeleton, Tile, Theme, ActionableNotification } from '@carbon/react';
+import {
+  DataTableSkeleton,
+  Tile,
+  Theme,
+  ActionableNotification,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+} from '@carbon/react';
 import { EmptyCard, CardHeader, navigate, getCoreTranslation } from '@openmrs/esm-framework';
 import GrowthChartVisualization from './growth-chart-visualization.component';
 import UnknownGenderState from '../unknown-gender-state/unknown-gender.component';
 import { useGrowthChartData } from './growth-chart.resource';
 import { getGenderTranslation } from './growth-chart.utils';
+import { growthChartConfigurations, GROWTH_CHART_TYPE } from '../constants';
 import styles from './growth-chart-main.scss';
 
 interface GrowthChartProps {
@@ -18,6 +29,7 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
   const { t } = useTranslation();
   const { data, isLoading, isError } = useGrowthChartData(patient);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [selectedChartType, setSelectedChartType] = useState<GrowthChartType>(GROWTH_CHART_TYPE.WEIGHT_FOR_AGE);
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
 
   const handleGenderSelected = (gender: string) => {
@@ -68,6 +80,8 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
 
   const patientGenderValue = getGenderTranslation(patient?.gender);
 
+  const chartTypes = Object.values(growthChartConfigurations);
+
   return (
     <Theme theme="white">
       <div className={styles.container}>
@@ -103,7 +117,28 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
           <UnknownGenderState onGenderSelected={handleGenderSelected} />
         ) : (
           <div className={styles.visualizationContainer}>
-            <GrowthChartVisualization data={chartDataToRender} />
+            <Tabs
+              selectedIndex={chartTypes.findIndex((chart) => chart.id === selectedChartType)}
+              onChange={({ selectedIndex }) => {
+                const selectedChart = chartTypes[selectedIndex];
+                if (selectedChart) {
+                  setSelectedChartType(selectedChart.id);
+                }
+              }}
+            >
+              <TabList aria-label={t('growthChartTypeSelector', 'Growth chart type selector')}>
+                {chartTypes.map((chart) => (
+                  <Tab key={chart.id}>{t(chart.titleKey, chart.titleDefault)}</Tab>
+                ))}
+              </TabList>
+              <TabPanels>
+                {chartTypes.map((chart) => (
+                  <TabPanel key={chart.id}>
+                    <GrowthChartVisualization data={chartDataToRender} chartType={chart.id} />
+                  </TabPanel>
+                ))}
+              </TabPanels>
+            </Tabs>
           </div>
         )}
       </div>

@@ -1,69 +1,54 @@
 import React from 'react';
-import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
+import { Tile } from '@carbon/react';
 import { LineChart } from '@carbon/charts-react';
-import { getReferenceSeries, getChartOptions } from './growth-chart.utils';
-import type { GrowthChartData, Observation } from './growth-chart.resource';
+import { buildGrowthDataset, getChartOptions, getGrowthChartConfiguration } from './growth-chart.utils';
+import type { GrowthChartData } from './growth-chart.resource';
 import '@carbon/charts/styles.css';
 import styles from './growth-chart-main.scss';
 
 interface GrowthChartVisualizationProps {
   data: GrowthChartData;
+  chartType: GrowthChartType;
 }
 
-const GrowthChartVisualization: React.FC<GrowthChartVisualizationProps> = ({ data }) => {
+const GrowthChartVisualization: React.FC<GrowthChartVisualizationProps> = ({ data, chartType }) => {
   const { t } = useTranslation();
-  const { patient, weights } = data;
+  const { patient, observationsByType } = data;
 
-  const birthDate = React.useMemo(() => dayjs(patient?.birthDate), [patient?.birthDate]);
+  const chartConfig = React.useMemo(() => getGrowthChartConfiguration(chartType), [chartType]);
+  const observations = React.useMemo(() => observationsByType?.[chartType] ?? [], [observationsByType, chartType]);
+
+  const patientSeriesLabel = t(chartConfig.patientSeriesLabelKey, chartConfig.patientSeriesLabelDefault);
+
+  const chartOptions = React.useMemo(
+    () => getChartOptions(t, chartConfig, patientSeriesLabel),
+    [t, chartConfig, patientSeriesLabel],
+  );
 
   const chartData = React.useMemo(() => {
-    if (!patient || !weights || !birthDate.isValid()) {
+    if (!patient || !patient.birthDate) {
       return [];
     }
-    return getChartData(patient, weights, t);
-  }, [patient, weights, t, birthDate]);
 
-  const chartOptions = React.useMemo(() => getChartOptions(t), [t]);
+    return buildGrowthDataset({
+      gender: patient.gender,
+      chartType,
+      observations,
+      birthDate: patient.birthDate,
+      patientSeriesLabel,
+    });
+  }, [patient, chartType, observations, patientSeriesLabel]);
+
+  if (!observations.length) {
+    return <Tile>{t(chartConfig.emptyStateMessageKey, chartConfig.emptyStateMessageDefault)}</Tile>;
+  }
 
   return (
     <div className={styles.chartContainer}>
       <LineChart data={chartData} options={chartOptions} />
     </div>
   );
-};
-
-export const getPatientSeries = (weights: Observation[], birthDate: dayjs.Dayjs, patientWeightLabel: string) => {
-  return weights
-    .map((obs) => {
-      const obsDate = dayjs(obs.effectiveDateTime);
-      if (!obsDate.isValid() || obs.value == null) return null;
-
-      const ageInMonths = obsDate.diff(birthDate, 'month', true);
-      if (ageInMonths < 0) return null;
-
-      return {
-        group: patientWeightLabel,
-        age: ageInMonths,
-        value: obs.value,
-      };
-    })
-    .filter((item): item is { group: string; age: number; value: number } => item !== null)
-    .sort((a, b) => a.age - b.age);
-};
-
-const getChartData = (patient: fhir.Patient, weights: Observation[], t: TFunction) => {
-  const birthDate = dayjs(patient.birthDate);
-  if (!birthDate.isValid()) {
-    console.warn('Invalid birth date for patient');
-    return [];
-  }
-
-  const referenceSeries = getReferenceSeries(patient.gender);
-  const patientSeries = getPatientSeries(weights, birthDate, t('patientWeight', 'Patient Weight'));
-
-  return [...referenceSeries, ...patientSeries];
 };
 
 export default GrowthChartVisualization;
