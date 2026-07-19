@@ -32,6 +32,51 @@ The Growth Chart is designed for the OpenMRS 3.x Patient Chart. Its primary purp
 - **Unit Testing**
   1.Testing utility functions (`growth-chart.utils.ts`) that process and format patient weights.
 
+## Architecture
+
+- `src/growth-chart/growth-chart.resource.ts`
+  - Fetches patient observations from FHIR Observation endpoints.
+  - Converts response bundles into typed observation objects.
+  - Centralizes REST URL construction and loading/error composition.
+- `src/growth-chart/growth-chart.utils.ts`
+  - Calculates age in months from DOB and observation date.
+  - Loads WHO reference data dynamically by gender and chart type.
+  - Builds SD curve datasets (`-3 SD` through `+3 SD`) and patient series.
+  - Generates chart options from chart configuration.
+- `src/growth-chart/growth-chart.component.tsx`
+  - Orchestrates data loading and chart selection.
+  - Handles unknown gender fallback and age eligibility checks.
+  - Passes selected chart type and transformed data to visualization.
+- `src/growth-chart/growth-chart-visualization.component.tsx`
+  - Renders chart and empty states.
+  - Does not fetch or process WHO data directly.
+
+## Data Flow
+
+1. The container requests growth observations for configured concepts (`weightUuid`, `heightUuid`).
+2. The selected chart configuration determines WHO dataset, axis labels, unit, and patient series naming.
+3. Utilities build WHO SD curve points and patient measurement points on an `Age (Months)` x-axis.
+4. Visualization renders a single reusable chart component for Weight-for-Age and Height-for-Age.
+
+## WHO Dataset Organization
+
+WHO references are stored in JSON by sex and indicator:
+
+- `src/who-data/boys/weight-for-age.json`
+- `src/who-data/boys/height-for-age.json`
+- `src/who-data/girls/weight-for-age.json`
+- `src/who-data/girls/height-for-age.json`
+
+## Adding Future Growth Charts
+
+To add a new chart (for example BMI-for-Age), you should only need to:
+
+1. Add WHO dataset JSON files under `src/who-data/boys/` and `src/who-data/girls/`.
+2. Add concept UUID in `src/config-schema.ts` defaults.
+3. Add one `GrowthChartConfiguration` entry in `src/constants.ts`.
+
+The generic utility and visualization pipeline will reuse the same rendering and processing flow.
+
 ## Quick start
 
 ```bash

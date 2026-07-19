@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@openmrs/esm-patient-growth-chart-app": "http://localhost:8094/openmrs-esm-patient-growth-chart.js"
+  }
+}

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth Chart Preview</title>
+  <style>
+    :root {
+      --bg: #f4f4f4;
+      --card: #ffffff;
+      --text: #161616;
+      --muted: #6f6f6f;
+      --danger: #da1e28;
+      --warn: #ff832b;
+      --neutral: #8d8d8d;
+      --success: #24a148;
+      --patient: #262626;
+      --grid: #e0e0e0;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Segoe UI, Arial, sans-serif;
+    }
+    .card {
+      max-width: 1050px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      border-radius: 8px;
+      padding: 18px 18px 24px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 24px; height: 3px; border-radius: 3px; display: inline-block; }
+    svg { width: 100%; height: auto; border: 1px solid #e0e0e0; background: #fff; }
+    .axis text { fill: var(--muted); font-size: 12px; }
+    .axis-title { fill: #525252; font-size: 13px; font-weight: 600; }
+    .grid { stroke: var(--grid); stroke-width: 1; }
+    .curve { fill: none; stroke-width: 2; }
+    .patient { stroke-width: 3.5; }
+    .dot { fill: var(--patient); stroke: #fff; stroke-width: 1; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Height for Age (0-5 Years)</h1>
+    <div class="legend">
+      <span><i class="swatch" style="background:#da1e28"></i>-3 SD / +3 SD</span>
+      <span><i class="swatch" style="background:#ff832b"></i>-2 SD / +2 SD</span>
+      <span><i class="swatch" style="background:#8d8d8d"></i>-1 SD / +1 SD</span>
+      <span><i class="swatch" style="background:#24a148"></i>Median</span>
+      <span><i class="swatch" style="background:#262626;height:4px"></i>Patient Height</span>
+    </div>
+    <svg viewBox="0 0 980 560" aria-label="Height for Age chart preview">
+      <g transform="translate(70,30)">
+        <rect x="0" y="0" width="860" height="460" fill="#fff"/>
+
+        <g>
+          <line class="grid" x1="0" y1="0" x2="0" y2="460"/>
+          <line class="grid" x1="172" y1="0" x2="172" y2="460"/>
+          <line class="grid" x1="344" y1="0" x2="344" y2="460"/>
+          <line class="grid" x1="516" y1="0" x2="516" y2="460"/>
+          <line class="grid" x1="688" y1="0" x2="688" y2="460"/>
+          <line class="grid" x1="860" y1="0" x2="860" y2="460"/>
+
+          <line class="grid" x1="0" y1="0" x2="860" y2="0"/>
+          <line class="grid" x1="0" y1="76.7" x2="860" y2="76.7"/>
+          <line class="grid" x1="0" y1="153.3" x2="860" y2="153.3"/>
+          <line class="grid" x1="0" y1="230" x2="860" y2="230"/>
+          <line class="grid" x1="0" y1="306.7" x2="860" y2="306.7"/>
+          <line class="grid" x1="0" y1="383.3" x2="860" y2="383.3"/>
+          <line class="grid" x1="0" y1="460" x2="860" y2="460"/>
+        </g>
+
+        <g>
+          <path class="curve" stroke="#da1e28" d="M0,438 L172,332 L344,270 L516,234 L688,203 L860,183"/>
+          <path class="curve" stroke="#ff832b" d="M0,424 L172,316 L344,249 L516,208 L688,176 L860,152"/>
+          <path class="curve" stroke="#8d8d8d" d="M0,410 L172,300 L344,229 L516,183 L688,148 L860,121"/>
+          <path class="curve" stroke="#24a148" d="M0,396 L172,281 L344,206 L516,160 L688,121 L860,90"/>
+          <path class="curve" stroke="#8d8d8d" d="M0,382 L172,263 L344,183 L516,137 L688,94 L860,60"/>
+          <path class="curve" stroke="#ff832b" d="M0,368 L172,245 L344,160 L516,114 L688,70 L860,33"/>
+          <path class="curve" stroke="#da1e28" d="M0,354 L172,227 L344,137 L516,90 L688,45 L860,5"/>
+
+          <path class="curve patient" stroke="#262626" d="M0,404 L172,287 L344,214 L516,168 L688,127 L860,98"/>
+          <circle class="dot" cx="0" cy="404" r="4"/>
+          <circle class="dot" cx="172" cy="287" r="4"/>
+          <circle class="dot" cx="344" cy="214" r="4"/>
+          <circle class="dot" cx="516" cy="168" r="4"/>
+          <circle class="dot" cx="688" cy="127" r="4"/>
+          <circle class="dot" cx="860" cy="98" r="4"/>
+        </g>
+
+        <g class="axis">
+          <line x1="0" y1="460" x2="860" y2="460" stroke="#525252"/>
+          <line x1="0" y1="0" x2="0" y2="460" stroke="#525252"/>
+
+          <text x="0" y="484" text-anchor="middle">0</text>
+          <text x="172" y="484" text-anchor="middle">12</text>
+          <text x="344" y="484" text-anchor="middle">24</text>
+          <text x="516" y="484" text-anchor="middle">36</text>
+          <text x="688" y="484" text-anchor="middle">48</text>
+          <text x="860" y="484" text-anchor="middle">60</text>
+
+          <text x="-10" y="464" text-anchor="end">40</text>
+          <text x="-10" y="387" text-anchor="end">55</text>
+          <text x="-10" y="311" text-anchor="end">70</text>
+          <text x="-10" y="234" text-anchor="end">85</text>
+          <text x="-10" y="157" text-anchor="end">100</text>
+          <text x="-10" y="81" text-anchor="end">115</text>
+          <text x="-10" y="5" text-anchor="end">130</text>
+        </g>
+
+        <text class="axis-title" x="430" y="525" text-anchor="middle">Age (Months)</text>
+        <text class="axis-title" x="-52" y="230" text-anchor="middle" transform="rotate(-90 -52 230)">Height (cm)</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>
