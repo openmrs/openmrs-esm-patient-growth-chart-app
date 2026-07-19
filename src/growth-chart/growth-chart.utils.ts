@@ -1,26 +1,142 @@
 import type { TFunction } from 'i18next';
+import dayjs from 'dayjs';
 import { ScaleTypes, ToolbarControlTypes } from '@carbon/charts/interfaces';
 import { getCoreTranslation } from '@openmrs/esm-framework';
+import { growthChartConfigurations, GROWTH_CHART_TYPE } from '../constants';
 import boysWeightData from '../who-data/boys/weight-for-age.json';
 import girlsWeightData from '../who-data/girls/weight-for-age.json';
+import boysHeightData from '../who-data/boys/height-for-age.json';
+import girlsHeightData from '../who-data/girls/height-for-age.json';
+import type { Observation } from './growth-chart.resource';
 
-export const getReferenceSeries = (gender?: string) => {
+type WHODataPoint = {
+  age_months: number;
+  L: number;
+  M: number;
+  S: number;
+  SD3neg?: number;
+  SD2neg?: number;
+  SD1neg?: number;
+  SD0?: number;
+  SD1?: number;
+  SD2?: number;
+  SD3?: number;
+};
+
+const SD_CURVE_DEFINITIONS: Array<{
+  group: '-3 SD' | '-2 SD' | '-1 SD' | 'Median' | '+1 SD' | '+2 SD' | '+3 SD';
+  z: number;
+  key: keyof WHODataPoint;
+}> = [
+  { group: '-3 SD', z: -3, key: 'SD3neg' },
+  { group: '-2 SD', z: -2, key: 'SD2neg' },
+  { group: '-1 SD', z: -1, key: 'SD1neg' },
+  { group: 'Median', z: 0, key: 'SD0' },
+  { group: '+1 SD', z: 1, key: 'SD1' },
+  { group: '+2 SD', z: 2, key: 'SD2' },
+  { group: '+3 SD', z: 3, key: 'SD3' },
+];
+
+const getLmsValueForZScore = (point: WHODataPoint, zScore: number) => {
+  const { L, M, S } = point;
+
+  if (L === 0) {
+    return M * Math.exp(S * zScore);
+  }
+
+  const base = 1 + L * S * zScore;
+  if (base <= 0) {
+    return null;
+  }
+
+  return M * Math.pow(base, 1 / L);
+};
+
+const getSeriesValueForSdCurve = (point: WHODataPoint, zScore: number, fieldKey: keyof WHODataPoint) => {
+  const explicitValue = point[fieldKey];
+  if (typeof explicitValue === 'number') {
+    return explicitValue;
+  }
+
+  return getLmsValueForZScore(point, zScore);
+};
+
+export const calculateAgeInMonths = (birthDate: string, observationDate: string) => {
+  const birth = dayjs(birthDate);
+  const observation = dayjs(observationDate);
+
+  if (!birth.isValid() || !observation.isValid()) {
+    return null;
+  }
+
+  const ageInMonths = observation.diff(birth, 'month', true);
+  return ageInMonths >= 0 ? ageInMonths : null;
+};
+
+export const processGrowthObservations = (
+  observations: Observation[],
+  birthDate: string,
+  patientSeriesLabel: string,
+): GrowthChartSeriesPoint[] => {
+  return observations
+    .map((observation) => {
+      if (observation.value == null || !observation.effectiveDateTime) {
+        return null;
+      }
+
+      const age = calculateAgeInMonths(birthDate, observation.effectiveDateTime);
+      if (age == null) {
+        return null;
+      }
+
+      return {
+        group: patientSeriesLabel,
+        age,
+        value: observation.value,
+      };
+    })
+    .filter((point): point is GrowthChartSeriesPoint => point !== null)
+    .sort((a, b) => a.age - b.age);
+};
+
+export const loadWHOReference = (gender: string | undefined, chartType: GrowthChartType): WHODataPoint[] => {
   const supportedGender = gender?.toLowerCase();
-  const whoData = supportedGender === 'female' ? girlsWeightData : supportedGender === 'male' ? boysWeightData : null;
+
+  if (supportedGender !== 'male' && supportedGender !== 'female') {
+    return [];
+  }
+
+  if (chartType === GROWTH_CHART_TYPE.WEIGHT_FOR_AGE) {
+    return supportedGender === 'female' ? (girlsWeightData as WHODataPoint[]) : (boysWeightData as WHODataPoint[]);
+  }
+
+  return supportedGender === 'female' ? (girlsHeightData as WHODataPoint[]) : (boysHeightData as WHODataPoint[]);
+};
+
+export const buildWHOReferenceSeries = (
+  gender: string | undefined,
+  chartType: GrowthChartType,
+): GrowthChartSeriesPoint[] => {
+  const whoData = loadWHOReference(gender, chartType);
 
   if (!whoData) {
     return [];
   }
 
-  const referenceSeries: Array<{ group: string; age: number; value: number }> = [];
-  const percentiles = ['P3', 'P15', 'P50', 'P85', 'P97'];
+  const referenceSeries: GrowthChartSeriesPoint[] = [];
 
   whoData.forEach((point) => {
-    percentiles.forEach((p) => {
+    SD_CURVE_DEFINITIONS.forEach(({ group, z, key }) => {
+      const value = getSeriesValueForSdCurve(point, z, key);
+
+      if (value == null) {
+        return;
+      }
+
       referenceSeries.push({
-        group: p,
+        group,
         age: point.age_months,
-        value: point[p],
+        value,
       });
     });
   });
@@ -28,17 +144,38 @@ export const getReferenceSeries = (gender?: string) => {
   return referenceSeries;
 };
 
-export const getChartOptions = (t: TFunction) => {
+export const buildGrowthDataset = ({
+  gender,
+  chartType,
+  observations,
+  birthDate,
+  patientSeriesLabel,
+}: {
+  gender: string | undefined;
+  chartType: GrowthChartType;
+  observations: Observation[];
+  birthDate: string;
+  patientSeriesLabel: string;
+}): GrowthChartSeriesPoint[] => {
+  const referenceSeries = buildWHOReferenceSeries(gender, chartType);
+  const patientSeries = processGrowthObservations(observations, birthDate, patientSeriesLabel);
+
+  return [...referenceSeries, ...patientSeries];
+};
+
+export const getChartOptions = (t: TFunction, chartConfig: GrowthChartConfiguration, patientSeriesLabel: string) => {
   const referencePalette = {
-    P3: 'var(--cds-support-error)',
-    P15: 'var(--cds-support-warning)',
-    P50: 'var(--cds-support-success)',
-    P85: 'var(--cds-support-warning)',
-    P97: 'var(--cds-support-error)',
+    '-3 SD': 'var(--cds-support-error)',
+    '-2 SD': 'var(--cds-support-warning)',
+    '-1 SD': 'var(--cds-border-subtle-02)',
+    Median: 'var(--cds-support-success)',
+    '+1 SD': 'var(--cds-border-subtle-02)',
+    '+2 SD': 'var(--cds-support-warning)',
+    '+3 SD': 'var(--cds-support-error)',
   };
 
   return {
-    title: t('weightForAge', 'Weight for Age (0-5 Years)'),
+    title: t(chartConfig.titleKey, chartConfig.titleDefault),
     axes: {
       bottom: {
         title: t('ageInMonths', 'Age (Months)'),
@@ -50,11 +187,11 @@ export const getChartOptions = (t: TFunction) => {
         },
       },
       left: {
-        title: t('weightKg', 'Weight (kg)'),
+        title: t(chartConfig.yAxisLabelKey, chartConfig.yAxisLabelDefault),
         mapsTo: 'value',
         scaleType: ScaleTypes.LINEAR,
         ticks: {
-          values: [0, 5, 10, 15, 20, 25],
+          values: chartConfig.yAxisTickValues,
         },
       },
     },
@@ -62,7 +199,7 @@ export const getChartOptions = (t: TFunction) => {
     height: '800px',
     points: {
       radius: ((d) => {
-        if (d.group === t('patientWeight', 'Patient Weight')) {
+        if (d.group === patientSeriesLabel) {
           return 3;
         }
         return 0;
@@ -74,7 +211,7 @@ export const getChartOptions = (t: TFunction) => {
     color: {
       scale: {
         ...referencePalette,
-        [t('patientWeight', 'Patient Weight')]: 'var(--cds-text-primary)',
+        [patientSeriesLabel]: 'var(--cds-text-primary)',
       },
     },
     grid: {
@@ -91,7 +228,7 @@ export const getChartOptions = (t: TFunction) => {
       ],
     },
     getIsFilled: (group) => {
-      if (group === t('patientWeight', 'Patient Weight')) {
+      if (group === patientSeriesLabel) {
         return true;
       }
       return false;
@@ -101,6 +238,11 @@ export const getChartOptions = (t: TFunction) => {
         if (label === t('ageInMonths', 'Age (Months)')) {
           return Math.floor(value);
         }
+
+        if (label === t(chartConfig.yAxisLabelKey, chartConfig.yAxisLabelDefault)) {
+          return Number(value).toFixed(1);
+        }
+
         return value;
       },
       showTotal: false,
@@ -119,4 +261,8 @@ export const getGenderTranslation = (gender: string | null | undefined) => {
     default:
       return getCoreTranslation('unknown', 'Unknown');
   }
+};
+
+export const getGrowthChartConfiguration = (chartType: GrowthChartType) => {
+  return growthChartConfigurations[chartType];
 };
