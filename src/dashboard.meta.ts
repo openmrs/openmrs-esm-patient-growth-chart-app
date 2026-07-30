@@ -7,7 +7,7 @@ export const dashboardMeta: Omit<DashboardExtensionProps, 'basePath'> & {
 } = {
   slot: 'patient-chart-growth-dashboard-slot',
   columns: 1,
-  title: 'Growth Chart',
+  title: 'Growth chart',
   hideDashboardTitle: false,
   icon: 'omrs-icon-chart-line',
   path: 'growth-chart',

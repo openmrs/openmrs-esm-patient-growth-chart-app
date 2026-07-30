@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tile, RadioButtonGroup, RadioButton, Layer } from '@carbon/react';
-import { getCoreTranslation } from '@openmrs/esm-framework';
-import { getGenderTranslation } from '../growth-chart/growth-chart.utils';
 import styles from './unknown-gender.scss';
 
 interface UnknownGenderStateProps {
@@ -26,19 +24,26 @@ const UnknownGenderState: React.FC<UnknownGenderStateProps> = ({ onGenderSelecte
       <Layer>
         <Tile className={styles.tile}>
           <div className={styles.tileContent}>
-            <p className={styles.content}>{t('noGrowthChartsToDisplay', 'No Growth charts to display')}</p>
+            <p className={styles.content}>{t('noGrowthChartsToDisplay', 'No growth charts to display')}</p>
             <p className={styles.helper}>
-              {t('unknownGender', 'The patient is unknown/other gender')}
+              {t('unknownGender', "This patient's recorded gender is unknown or other.")}
               <br />
-              {t('growthChartsAvailability', 'Growth charts are only available for male and female patients')}
-              <br />
-              {t('proceedSelectingGender', 'You can proceed by selecting one of the available genders')}
+              {t('referenceChartPrompt', 'Choose a reference chart to continue.')}
             </p>
 
             <div className={styles.radioGroup}>
-              <RadioButtonGroup name="gender-selection" valueSelected={selectedGender} onChange={handleGenderChange}>
-                <RadioButton value="male" id="male" labelText={getGenderTranslation('male')} />
-                <RadioButton value="female" id="female" labelText={getGenderTranslation('female')} />
+              <RadioButtonGroup
+                name="reference-chart-selection"
+                legendText={t('referenceChart', 'Reference chart')}
+                valueSelected={selectedGender}
+                onChange={handleGenderChange}
+              >
+                <RadioButton value="male" id="male-reference" labelText={t('maleReference', 'Male reference')} />
+                <RadioButton
+                  value="female"
+                  id="female-reference"
+                  labelText={t('femaleReference', 'Female reference')}
+                />
               </RadioButtonGroup>
             </div>
           </div>

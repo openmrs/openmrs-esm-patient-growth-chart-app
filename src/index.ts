@@ -16,6 +16,7 @@ export function startupApp() {
 }
 
 // Extensions
+// t('Growth chart', 'Growth chart')
 export const growthChartDashboardLink = getSyncLifecycle(createDashboard({ ...dashboardMeta }), options);
 
 export const growthChartMain = getSyncLifecycle(patientGrowthChartAppComponent, options);
