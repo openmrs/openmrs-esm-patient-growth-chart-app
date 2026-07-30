@@ -61,7 +61,7 @@ const getChartData = (patient: fhir.Patient, weights: Observation[], t: TFunctio
   }
 
   const referenceSeries = getReferenceSeries(patient.gender);
-  const patientSeries = getPatientSeries(weights, birthDate, t('patientWeight', 'Patient Weight'));
+  const patientSeries = getPatientSeries(weights, birthDate, t('patientWeight', 'Patient weight'));
 
   return [...referenceSeries, ...patientSeries];
 };

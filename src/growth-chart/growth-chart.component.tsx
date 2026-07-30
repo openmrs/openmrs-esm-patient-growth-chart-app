@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { DataTableSkeleton, Tile, Theme, ActionableNotification } from '@carbon/react';
-import { EmptyCard, CardHeader, navigate, getCoreTranslation } from '@openmrs/esm-framework';
+import { DataTableSkeleton, Layer, Tile, Theme, ActionableNotification } from '@carbon/react';
+import { CardHeader, navigate } from '@openmrs/esm-framework';
 import GrowthChartVisualization from './growth-chart-visualization.component';
 import UnknownGenderState from '../unknown-gender-state/unknown-gender.component';
 import { useGrowthChartData } from './growth-chart.resource';
@@ -50,7 +50,26 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
 
   if (ageInMonths !== null && ageInMonths > 60) {
     return (
-      <EmptyCard headerTitle={t('growthChart', 'Growth Chart')} displayText={t('growthCharts', 'Growth Charts')} />
+      <Theme theme="white">
+        <div className={styles.container}>
+          <CardHeader title={t('growthChart', 'Growth chart')} />
+          <div className={styles.unavailableStateContainer}>
+            <Layer>
+              <Tile className={styles.unavailableStateTile}>
+                <p className={styles.unavailableStateHeading}>
+                  {t('growthChartUnavailable', 'Growth chart unavailable')}
+                </p>
+                <p className={styles.unavailableStateBody}>
+                  {t(
+                    'growthChartAgeUnavailable',
+                    'Growth charts are available for children from birth through 5 years of age.',
+                  )}
+                </p>
+              </Tile>
+            </Layer>
+          </div>
+        </div>
+      </Theme>
     );
   }
 
@@ -64,14 +83,15 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
       }
     : data;
 
-  const selectedGenderValue = getGenderTranslation(selectedGender);
+  const selectedReferenceChart =
+    selectedGender === 'female' ? t('femaleReference', 'Female reference') : t('maleReference', 'Male reference');
 
   const patientGenderValue = getGenderTranslation(patient?.gender);
 
   return (
     <Theme theme="white">
       <div className={styles.container}>
-        <CardHeader title={t('growthChart', 'Growth Chart')} />
+        <CardHeader title={t('growthChart', 'Growth chart')} />
 
         {showUpdatePrompt && (
           <div className={styles.notificationContainer}>
@@ -81,16 +101,14 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ patientUuid, patient }) => {
               className={styles.customNotification}
               kind="info"
               title={t(
-                'viewingGrowthChartForUnsupportedGender',
-                'Viewing a {{selectedGender}} growth chart for patient with gender {{patientGender}}.',
+                'showingReferenceChart',
+                "Showing the {{selectedReferenceChart}} chart. The patient's recorded gender is {{patientGender}}.",
                 {
-                  selectedGender: selectedGenderValue,
+                  selectedReferenceChart,
                   patientGender: patientGenderValue,
                 },
               )}
-              actionButtonLabel={t('clickToSetGender', "Click to set patient's gender to {{selectedGender}}", {
-                selectedGender: selectedGenderValue,
-              })}
+              actionButtonLabel={t('editPatientDetails', 'Edit patient details')}
               onActionButtonClick={() => {
                 navigate({ to: '${openmrsSpaBase}/patient/${patientUuid}/edit', templateParams: { patientUuid } });
               }}

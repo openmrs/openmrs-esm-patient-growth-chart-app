@@ -42,9 +42,9 @@ test.describe('Growth Chart', () => {
     });
 
     await test.step('Then I should see the Growth Chart dashboard', async () => {
-      await expect(page.getByRole('heading', { name: /Weight for Age/i })).toBeVisible();
+      await expect(page.getByRole('heading', { name: /Weight-for-age/i })).toBeVisible();
       await expect(page.getByRole('group', { name: /Data groups/i })).toBeVisible();
-      await expect(page.getByRole('img', { name: /Weight for Age/i })).toBeVisible();
+      await expect(page.getByRole('img', { name: /Weight-for-age/i })).toBeVisible();
     });
   });
 });

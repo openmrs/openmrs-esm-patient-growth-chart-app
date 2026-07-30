@@ -38,10 +38,10 @@ export const getChartOptions = (t: TFunction) => {
   };
 
   return {
-    title: t('weightForAge', 'Weight for Age (0-5 Years)'),
+    title: t('weightForAge', 'Weight-for-age, birth to 5 years'),
     axes: {
       bottom: {
-        title: t('ageInMonths', 'Age (Months)'),
+        title: t('ageInMonths', 'Age (months)'),
         mapsTo: 'age',
         scaleType: ScaleTypes.LINEAR,
         ticks: {
@@ -62,7 +62,7 @@ export const getChartOptions = (t: TFunction) => {
     height: '800px',
     points: {
       radius: ((d) => {
-        if (d.group === t('patientWeight', 'Patient Weight')) {
+        if (d.group === t('patientWeight', 'Patient weight')) {
           return 3;
         }
         return 0;
@@ -74,7 +74,7 @@ export const getChartOptions = (t: TFunction) => {
     color: {
       scale: {
         ...referencePalette,
-        [t('patientWeight', 'Patient Weight')]: 'var(--cds-text-primary)',
+        [t('patientWeight', 'Patient weight')]: 'var(--cds-text-primary)',
       },
     },
     grid: {
@@ -91,14 +91,14 @@ export const getChartOptions = (t: TFunction) => {
       ],
     },
     getIsFilled: (group) => {
-      if (group === t('patientWeight', 'Patient Weight')) {
+      if (group === t('patientWeight', 'Patient weight')) {
         return true;
       }
       return false;
     },
     tooltip: {
       valueFormatter: (value, label) => {
-        if (label === t('ageInMonths', 'Age (Months)')) {
+        if (label === t('ageInMonths', 'Age (months)')) {
           return Math.floor(value);
         }
         return value;
