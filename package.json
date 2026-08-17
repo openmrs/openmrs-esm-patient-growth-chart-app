@@ -66,7 +66,7 @@
     "swr": "2.x"
   },
   "devDependencies": {
-    "@openmrs/eslint-config": "^2.0.0",
+    "@openmrs/eslint-config": "^2.1.0",
     "@openmrs/esm-framework": "next",
     "@openmrs/rspack-config": "next",
     "@playwright/test": "^1.40.1",
